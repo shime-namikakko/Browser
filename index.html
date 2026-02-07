@@ -17,19 +17,108 @@
             display: flex;
             flex-direction: column;
             background: #f5f5f5;
+            overflow: hidden;
         }
 
         .header {
             background: #fff;
-            padding: 12px 16px;
             border-bottom: 1px solid #e0e0e0;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        .url-bar {
+        .tabs-container {
+            display: flex;
+            align-items: center;
+            padding: 8px 8px 0 8px;
+            background: #f5f5f5;
+            gap: 4px;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .tabs-container::-webkit-scrollbar {
+            height: 0;
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #e8e8e8;
+            border: 1px solid #d0d0d0;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            min-width: 150px;
+            max-width: 200px;
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .tab:hover {
+            background: #d8d8d8;
+        }
+
+        .tab.active {
+            background: #fff;
+            border-color: #e0e0e0;
+        }
+
+        .tab-title {
+            flex: 1;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #333;
+        }
+
+        .tab-close {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .tab-close:hover {
+            background: rgba(0,0,0,0.1);
+            color: #000;
+        }
+
+        .new-tab-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: #e8e8e8;
+            border: 1px solid #d0d0d0;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .new-tab-btn:hover {
+            background: #d8d8d8;
+        }
+
+        .url-bar-container {
             display: flex;
             gap: 8px;
             align-items: center;
+            padding: 12px 16px;
+            background: #fff;
         }
 
         .url-input {
@@ -46,34 +135,44 @@
             border-color: #4285f4;
         }
 
-        .go-button {
-            padding: 10px 24px;
-            background: #4285f4;
-            color: white;
-            border: none;
-            border-radius: 24px;
-            font-size: 14px;
-            font-weight: 500;
+        .warning-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: #fff3cd;
+            border: 2px solid #ffc107;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            flex-shrink: 0;
         }
 
-        .go-button:hover {
-            background: #357ae8;
+        .warning-btn:hover {
+            background: #ffe69c;
+            transform: scale(1.05);
         }
 
-        .go-button:active {
-            background: #2a66c9;
-        }
-
-        .iframe-container {
+        .content-area {
             flex: 1;
-            background: white;
             position: relative;
             overflow: hidden;
         }
 
-        #site-frame {
+        .iframe-wrapper {
+            width: 100%;
+            height: 100%;
+            display: none;
+            position: relative;
+        }
+
+        .iframe-wrapper.active {
+            display: block;
+        }
+
+        .site-frame {
             width: 100%;
             height: 100%;
             border: none;
@@ -90,6 +189,8 @@
             background: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 500px;
+            z-index: 10;
         }
 
         .error-message.show {
@@ -104,6 +205,7 @@
         .error-text {
             color: #666;
             margin-bottom: 8px;
+            font-size: 16px;
         }
 
         .error-subtext {
@@ -111,74 +213,180 @@
             font-size: 13px;
         }
 
-        .suggestions {
-            margin-top: 12px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            text-align: left;
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
 
-        .suggestions-title {
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
             font-weight: 600;
-            margin-bottom: 8px;
             color: #333;
-            font-size: 13px;
         }
 
-        .suggestion-item {
-            color: #4285f4;
-            font-size: 13px;
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: transparent;
+            border: none;
             cursor: pointer;
-            margin: 4px 0;
-            text-decoration: underline;
+            color: #666;
         }
 
-        .suggestion-item:hover {
-            color: #357ae8;
+        .modal-close:hover {
+            background: #f0f0f0;
+        }
+
+        .blocked-sites-section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-icon {
+            font-size: 18px;
+        }
+
+        .sites-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px 16px;
+        }
+
+        .site-item {
+            padding: 6px 0;
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .site-item::before {
+            content: "• ";
+            color: #999;
+            margin-right: 8px;
+        }
+
+        .working-sites {
+            background: #e8f5e9;
+        }
+
+        .working-sites .site-item {
+            color: #2e7d32;
+        }
+
+        .working-sites .site-item::before {
+            color: #4caf50;
+        }
+
+        .modal-note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #856404;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="url-bar">
+        <div class="tabs-container" id="tabsContainer">
+            <div class="new-tab-btn" id="newTabBtn" title="新しいタブ">+</div>
+        </div>
+        <div class="url-bar-container">
             <input 
                 type="text" 
                 class="url-input" 
                 id="urlInput" 
-                placeholder="URLを入力してください（例: https://example.com）"
+                placeholder="URLを入力してEnterキーを押してください"
                 autocomplete="off"
             >
-            <button class="go-button" id="goButton">開く</button>
+            <button class="warning-btn" id="warningBtn" title="開けないサイトを確認">⚠</button>
         </div>
     </div>
 
-    <div class="iframe-container">
-        <iframe id="site-frame" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
-        <div class="error-message" id="errorMessage">
-            <div class="error-icon">⚠️</div>
-            <div class="error-text">このサイトは表示できません</div>
-            <div class="error-subtext">一部のサイトはセキュリティ上の理由でiframe内での表示を許可していません</div>
-            <div class="suggestions">
-                <div class="suggestions-title">試してみる:</div>
-                <div class="suggestion-item" onclick="loadUrl('https://example.com')">example.com</div>
-                <div class="suggestion-item" onclick="loadUrl('https://wikipedia.org')">wikipedia.org</div>
-                <div class="suggestion-item" onclick="loadUrl('https://archive.org')">archive.org</div>
+    <div class="content-area" id="contentArea">
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">⚠ 開けないサイト・使えるサイト</div>
+                <button class="modal-close" id="modalClose">×</button>
+            </div>
+            <div id="blockedSitesContent">
+                <!-- blocked-sites.jsから動的に生成 -->
+            </div>
+            <div class="modal-note">
+                <strong>なぜ開けないの？</strong><br>
+                これらのサイトはセキュリティ対策として、iframe内での表示を制限しています（X-Frame-Optionsヘッダー）。
             </div>
         </div>
     </div>
 
+    <script src="blocked-sites.js"></script>
     <script>
+        let tabs = [];
+        let activeTabId = null;
+        let nextTabId = 1;
+
+        const tabsContainer = document.getElementById('tabsContainer');
+        const newTabBtn = document.getElementById('newTabBtn');
         const urlInput = document.getElementById('urlInput');
-        const goButton = document.getElementById('goButton');
-        const siteFrame = document.getElementById('site-frame');
-        const errorMessage = document.getElementById('errorMessage');
+        const warningBtn = document.getElementById('warningBtn');
+        const contentArea = document.getElementById('contentArea');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalClose = document.getElementById('modalClose');
+        const blockedSitesContent = document.getElementById('blockedSitesContent');
 
         function normalizeUrl(url) {
             url = url.trim();
             if (!url) return '';
             
-            // プロトコルがない場合はhttpsを追加
             if (!url.match(/^https?:\/\//i)) {
                 url = 'https://' + url;
             }
@@ -186,66 +394,223 @@
             return url;
         }
 
-        function loadUrl(url) {
-            if (!url) {
-                url = urlInput.value;
+        function createTab(url = '') {
+            const tabId = nextTabId++;
+            
+            const tab = {
+                id: tabId,
+                url: url,
+                title: url || '新しいタブ'
+            };
+
+            tabs.push(tab);
+
+            // タブUI作成
+            const tabElement = document.createElement('div');
+            tabElement.className = 'tab';
+            tabElement.dataset.tabId = tabId;
+            tabElement.innerHTML = `
+                <span class="tab-title">${tab.title}</span>
+                <button class="tab-close">×</button>
+            `;
+
+            tabElement.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('tab-close')) {
+                    switchTab(tabId);
+                }
+            });
+
+            tabElement.querySelector('.tab-close').addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeTab(tabId);
+            });
+
+            tabsContainer.insertBefore(tabElement, newTabBtn);
+
+            // iframe作成
+            const iframeWrapper = document.createElement('div');
+            iframeWrapper.className = 'iframe-wrapper';
+            iframeWrapper.dataset.tabId = tabId;
+            iframeWrapper.innerHTML = `
+                <iframe class="site-frame" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-popups-to-escape-sandbox"></iframe>
+                <div class="error-message">
+                    <div class="error-icon">⚠️</div>
+                    <div class="error-text">このサイトは表示できません</div>
+                    <div class="error-subtext">iframe内での表示を許可していないサイトです</div>
+                </div>
+            `;
+            contentArea.appendChild(iframeWrapper);
+
+            switchTab(tabId);
+
+            if (url) {
+                loadUrlInTab(tabId, url);
             }
-            
-            url = normalizeUrl(url);
-            
-            if (!url) {
-                alert('URLを入力してください');
+
+            return tabId;
+        }
+
+        function switchTab(tabId) {
+            activeTabId = tabId;
+
+            // タブUIの更新
+            document.querySelectorAll('.tab').forEach(el => {
+                el.classList.toggle('active', el.dataset.tabId == tabId);
+            });
+
+            // iframe表示の切り替え
+            document.querySelectorAll('.iframe-wrapper').forEach(el => {
+                el.classList.toggle('active', el.dataset.tabId == tabId);
+            });
+
+            // URL入力欄の更新
+            const tab = tabs.find(t => t.id === tabId);
+            if (tab) {
+                urlInput.value = tab.url;
+            }
+        }
+
+        function closeTab(tabId) {
+            if (tabs.length === 1) {
+                // 最後のタブは閉じずに内容をクリア
+                const tab = tabs[0];
+                tab.url = '';
+                tab.title = '新しいタブ';
+                const tabElement = document.querySelector(`.tab[data-tab-id="${tabId}"]`);
+                if (tabElement) {
+                    tabElement.querySelector('.tab-title').textContent = '新しいタブ';
+                }
+                const wrapper = document.querySelector(`.iframe-wrapper[data-tab-id="${tabId}"]`);
+                if (wrapper) {
+                    wrapper.querySelector('.site-frame').src = '';
+                    wrapper.querySelector('.error-message').classList.remove('show');
+                }
+                urlInput.value = '';
                 return;
             }
 
-            // エラーメッセージを非表示
+            const tabIndex = tabs.findIndex(t => t.id === tabId);
+            tabs.splice(tabIndex, 1);
+
+            // UI削除
+            document.querySelector(`.tab[data-tab-id="${tabId}"]`)?.remove();
+            document.querySelector(`.iframe-wrapper[data-tab-id="${tabId}"]`)?.remove();
+
+            // アクティブタブが閉じられた場合
+            if (activeTabId === tabId) {
+                const newActiveTab = tabs[Math.max(0, tabIndex - 1)];
+                switchTab(newActiveTab.id);
+            }
+        }
+
+        function loadUrlInTab(tabId, url) {
+            url = normalizeUrl(url);
+            if (!url) return;
+
+            const tab = tabs.find(t => t.id === tabId);
+            if (!tab) return;
+
+            tab.url = url;
+
+            const wrapper = document.querySelector(`.iframe-wrapper[data-tab-id="${tabId}"]`);
+            const iframe = wrapper.querySelector('.site-frame');
+            const errorMessage = wrapper.querySelector('.error-message');
+
             errorMessage.classList.remove('show');
-            
-            // iframeにURLを設定
-            siteFrame.src = url;
-            
-            // 入力欄にも正規化されたURLを表示
-            if (url !== urlInput.value) {
-                urlInput.value = url;
+            iframe.src = url;
+
+            // タイトルを更新（ドメイン名を表示）
+            try {
+                const urlObj = new URL(url);
+                tab.title = urlObj.hostname;
+            } catch (e) {
+                tab.title = url;
             }
 
-            // エラーハンドリング
-            siteFrame.onerror = function() {
+            const tabElement = document.querySelector(`.tab[data-tab-id="${tabId}"]`);
+            if (tabElement) {
+                tabElement.querySelector('.tab-title').textContent = tab.title;
+            }
+
+            // エラー検出
+            iframe.addEventListener('load', () => {
+                setTimeout(() => {
+                    try {
+                        const frameDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        if (!frameDoc || frameDoc.body.innerHTML === '') {
+                            errorMessage.classList.add('show');
+                        }
+                    } catch (e) {
+                        // クロスオリジンは正常
+                    }
+                }, 500);
+            }, { once: true });
+
+            iframe.onerror = () => {
                 errorMessage.classList.add('show');
             };
         }
 
-        // ボタンクリックイベント
-        goButton.addEventListener('click', () => loadUrl());
+        function loadCurrentTabUrl() {
+            if (activeTabId !== null) {
+                loadUrlInTab(activeTabId, urlInput.value);
+            }
+        }
 
-        // Enterキーでも実行
+        function renderBlockedSites() {
+            let html = '';
+            
+            BLOCKED_SITES.forEach(category => {
+                const isWorking = category.name === '使えるサイトの例';
+                const iconMap = {
+                    'Google系サービス': '🔍',
+                    'SNS': '📱',
+                    'その他の主要サービス': '🌐',
+                    '使えるサイトの例': '✅'
+                };
+                
+                html += `
+                    <div class="blocked-sites-section">
+                        <div class="section-title">
+                            <span class="section-icon">${iconMap[category.name] || '📋'}</span>
+                            ${category.name}
+                        </div>
+                        <div class="sites-list ${isWorking ? 'working-sites' : ''}">
+                            ${category.sites.map(site => `<div class="site-item">${site}</div>`).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            blockedSitesContent.innerHTML = html;
+        }
+
+        // イベントリスナー
+        newTabBtn.addEventListener('click', () => createTab());
+
         urlInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                loadUrl();
+                loadCurrentTabUrl();
             }
         });
 
-        // iframeの読み込みエラーを検出（X-Frame-Optionsなど）
-        siteFrame.addEventListener('load', () => {
-            try {
-                // クロスオリジンの場合、このアクセスは失敗する
-                const frameDoc = siteFrame.contentDocument || siteFrame.contentWindow.document;
-                if (!frameDoc || frameDoc.body.innerHTML === '') {
-                    // 空のページの場合はエラーの可能性
-                    setTimeout(() => {
-                        if (!siteFrame.contentDocument?.body?.innerHTML) {
-                            errorMessage.classList.add('show');
-                        }
-                    }, 1000);
-                }
-            } catch (e) {
-                // クロスオリジンエラーは正常（サイトが読み込まれている）
-                errorMessage.classList.remove('show');
+        warningBtn.addEventListener('click', () => {
+            modalOverlay.classList.add('show');
+        });
+
+        modalClose.addEventListener('click', () => {
+            modalOverlay.classList.remove('show');
+        });
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('show');
             }
         });
 
-        // 初期メッセージ
-        urlInput.placeholder = 'URLを入力してください（例: https://example.com）';
+        // 初期化
+        renderBlockedSites();
+        createTab();
     </script>
 </body>
 </html>
